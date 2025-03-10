@@ -1,0 +1,120 @@
+#:kivy 2.0.0
+
+<MainScreen>:
+    orientation: "vertical"
+    padding: 10
+    spacing: 10
+    port_spinner:port_spinner
+    baud_rate_input:baud_rate_input
+    channels_box:channels_box
+    heading_label:heading_label
+    BoxLayout:
+        id: connection_layout
+        orientation: "horizontal"
+        size_hint_y: None
+        height: 30
+        spacing: 10
+        
+        Widget:
+        Spinner:
+            id: port_spinner
+            text: "Select Port"
+            size_hint_x: 0.4
+            on_release: root.scan_ports()
+
+        TextInput:
+            id: baud_rate_input
+            text: "115200"
+            multiline: False
+            size_hint_x: 0.2
+
+        Button:
+            text: "Connect"
+            size_hint_x: 0.2
+            on_release: root.connect_serial()
+        
+
+    Button:
+        text: "Increase Throttle"
+        size_hint_y: None
+        height: 50
+        on_release: root.increase_throttle(10)
+
+    BoxLayout:
+        id: channels_box
+        orientation: "vertical"
+
+    BoxLayout:
+        orientation:'horizontal'
+        ArmButton:
+            size_hint:0.8,1
+            on_release:self.toggle_state(self)
+            text:"Disarmed"
+        
+        AltitudeButton:
+            size_hint:0.2,1
+            on_release:self.toggle_altitude_hold(self)
+            text:"Altitude Hold OFF"
+    Label:
+        id: heading_label
+        text: "Heading: N/A"
+        size_hint_y: None
+        height: 40
+
+
+
+
+<ChannelWidget>:
+    orientation: "horizontal"
+    spacing: 10
+    size_hint_y: None
+    height: 40
+
+    Label:
+        text: root.channel_name.capitalize() + ":"
+        size_hint_x: 0.2
+
+    ToggleButton:
+        id: toggle_button
+        size_hint_x: 0.6
+        opacity: 1 if root.channel_name in ["arm", "mode", "altitude_hold"] else 0
+        disabled: not(root.channel_name in ["arm", "mode", "altitude_hold"])
+        text:
+            "Disarmed" if root.channel_name == "arm" else (
+            "Angle" if root.channel_name == "mode" else (
+            "Altitude Hold ON" if root.channel_name == "altitude_hold" else ""))
+        on_press:
+            if root.channel_name == "arm": root.toggle_state(self)
+            elif root.channel_name == "mode": root.toggle_mode(self)
+            elif root.channel_name == "altitude_hold": root.toggle_altitude_hold(self)
+
+
+
+    Slider:
+        id: slider
+        min: 192
+        max: 1792
+        value: root.value if root.channel_name not in ["arm", "mode", "altitude_hold"] else 0
+        step: 1
+        size_hint_x: 0.6
+        opacity: 1 if not(root.channel_name in ["arm", "mode", "altitude_hold"]) else 0
+        disabled: root.channel_name in ["arm", "mode", "altitude_hold"]
+        on_value: root.on_slider_value(self.value)
+
+
+
+    TextInput:
+        id: offset_input
+        text: str(root.offset)
+        size_hint_x: 0.2
+        multiline: False
+        opacity: 1 if not(root.channel_name in ["arm", "mode", "altitude_hold"]) else 0
+        disabled: root.channel_name in ["arm", "mode", "altitude_hold"]
+        on_text: root.on_offset_text(self.text)
+
+
+
+    Label:
+        id: value_label
+        text: str(root.value + root.offset) if not(root.channel_name in ["arm", "mode", "altitude_hold"]) else ""
+        size_hint_x: 0.2
