@@ -34,11 +34,43 @@
             on_release: root.connect_serial()
         
 
-    Button:
-        text: "Increase Throttle"
+    BoxLayout:
+        orientation: "horizontal"
         size_hint_y: None
         height: 50
-        on_release: root.increase_throttle(10)
+        Button:
+            text: "Increase Throttle"            
+            on_release: root.increase_throttle(int(throttle_increment.text))
+        TextInput:
+            id:throttle_increment
+            text:'10'
+    
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: None
+        height: 50
+        Button:
+            text: "Increase - Decrease Throttle"   
+            on_press: root.increase_throttle(int(throttle_increment.text))         
+            on_release: root.increase_throttle(-int(throttle_increment.text))
+        TextInput:
+            id:throttle_increment
+            text:'10'
+
+
+    
+    BoxLayout:
+        orientation: "horizontal"
+        size_hint_y: None
+        height: 50
+        Button:
+            text: "Go Forward"
+            on_press:root.go_forward(int(forward_increment.text))
+            on_release: root.go_forward(-int(forward_increment.text))
+
+        TextInput:
+            id:forward_increment
+            text:'10'
 
     BoxLayout:
         id: channels_box

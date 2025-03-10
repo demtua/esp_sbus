@@ -59,6 +59,16 @@ class MainScreen(BoxLayout):
             print(f"Connected to {selected_port} at {baud_rate} bps")
         except Exception as e:
             print("Error connecting:", e)
+    
+    def go_forward(self, value):
+        CHANNEL_VALUES['pitch'] = min(CHANNEL_VALUES['pitch'] + value, 2053)
+        print(f"pitch increased: {CHANNEL_VALUES['pitch']}")
+        # Update the throttle widget.
+        for cw in self.channels_box.children:
+            if cw.channel_name == 'pitch':
+                cw.value = CHANNEL_VALUES['pitch']
+                break
+
 
     def increase_throttle(self, value):
         CHANNEL_VALUES['throttle'] = min(CHANNEL_VALUES['throttle'] + value, 2053)
